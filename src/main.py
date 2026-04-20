@@ -8,7 +8,7 @@ def main():
     right_mask = RightHalfMask(path)
     left_mask = LeftHalfMask(path)
     bottom_mask = BottomHalfMask(path)
-    (left_mask - bottom_mask).save("left_bottom_mask")
+    (~left_mask - bottom_mask).save("left_bottom_mask")
     left_mask.save("left_mask")
     exit()
     paths = [

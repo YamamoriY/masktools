@@ -1,3 +1,4 @@
+from abc import ABC, abstractmethod
 from pathlib import Path
 
 import torch
@@ -18,6 +19,9 @@ class Mask:
     def __mul__(self, other: "Mask") -> "Mask":
         return Mask(torch.minimum(self.mask, other.mask), self.input_path or other.input_path)
 
+    def __invert__(self) -> "Mask":
+        return Mask(255 - self.mask, self.input_path)
+
     def save(self, name: str) -> None:
         if self.input_path is None:
             raise ValueError("input_path is not set; cannot derive save location")
@@ -26,7 +30,7 @@ class Mask:
         write_jpeg(self.mask, save_path)
 
 
-class GeneratedMask(Mask):
+class GeneratedMask(Mask, ABC):
     name: str
     input_path: Path
     cache_path: Path
@@ -43,9 +47,9 @@ class GeneratedMask(Mask):
             self._save(mask)
         super().__init__(mask, self.input_path)
 
+    @abstractmethod
     def _generate(self) -> torch.Tensor:
-        image = read_image(self.input_path)
-        return torch.full_like(image, 255)
+        ...
 
     def _save(self, tensor: torch.Tensor) -> None:
         self.cache_path.parent.mkdir(parents=True, exist_ok=True)
