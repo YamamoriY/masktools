@@ -8,6 +8,15 @@ class Mask:
     def __init__(self, mask: torch.Tensor):
         self.mask = mask
 
+    def __or__(self, other: "Mask") -> "Mask":
+        return Mask(torch.maximum(self.mask, other.mask))
+
+    def __sub__(self, other: "Mask") -> "Mask":
+        return Mask(torch.clamp(self.mask - other.mask, min=0))
+
+    def __mul__(self, other: "Mask") -> "Mask":
+        return Mask(torch.minimum(self.mask, other.mask))
+
 
 class GeneratedMask(Mask):
     name: str
