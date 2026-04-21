@@ -1,16 +1,15 @@
-from lib.left_half_mask import LeftHalfMask
-from lib.right_half_mask import RightHalfMask
-from lib.bottom_half_mask import BottomHalfMask
+from lib.example_left_mask import ExampleLeftMask
+from lib.example_right_mask import ExampleRightMask
+from lib.example_bottom_mask import ExampleBottomMask
 from lib.person_mask import PersonMask
 from lib.sky_mask_segformer_b5 import SkyMaskSegformerB5
 
 def example():
     path = "data/testdata/input_01.jpg"
-    right_mask = RightHalfMask(path)
-    left_mask = LeftHalfMask(path)
-    bottom_mask = BottomHalfMask(path)
-    (~left_mask - bottom_mask).save("left_bottom_mask")
-    left_mask.export("left_mask")
+    right_mask = ExampleRightMask(path)
+    left_mask = ExampleLeftMask(path)
+    bottom_mask = ExampleBottomMask(path)
+    (~left_mask - bottom_mask).export("right_top_mask")
 
 def main():
     paths = [

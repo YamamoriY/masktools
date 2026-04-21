@@ -4,13 +4,13 @@ from torchvision.io import read_image
 from .mask import GeneratedMask
 
 
-class LeftHalfMask(GeneratedMask):
+class ExampleBottomMask(GeneratedMask):
     def __init__(self, input_path: str):
-        super().__init__("left_half_mask", input_path)
+        super().__init__("example_bottom_mask", input_path)
 
     def _generate(self) -> torch.Tensor:
         image = read_image(str(self.input_path))
         mask = torch.zeros_like(image)
-        w = image.shape[-1]
-        mask[..., : w // 2] = 255
+        h = image.shape[-2]
+        mask[..., h // 2:, :] = 255
         return mask

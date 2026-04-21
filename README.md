@@ -32,6 +32,6 @@ class MyMask(GeneratedMask):
 | `~a` | 反転 | `255 - a` |
 
 ```python
-combined = (WhiteMask(path) - LeftHalfMask(path)) * BottomHalfMask(path)
+combined = (WhiteMask(path) - ExampleLeftMask(path)) * ExampleBottomMask(path)
 combined.save("right_bottom_quarter")  # output/right_bottom_quarter/{ファイル名} に保存
 ```
