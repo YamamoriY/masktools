@@ -1,8 +1,8 @@
-from lib.mask import GeneratedMask
 from lib.left_half_mask import LeftHalfMask
 from lib.right_half_mask import RightHalfMask
 from lib.bottom_half_mask import BottomHalfMask
 from lib.person_mask import PersonMask
+from lib.sky_mask_segformer_b5 import SkyMaskSegformerB5
 
 def example():
     path = "data/testdata/input_01.jpg"
@@ -21,8 +21,9 @@ def main():
         "data/testdata/input_05.jpg",
     ]
     for path in paths:
-        mask = PersonMask(path)
-        mask.export("person_mask")
+        sky = SkyMaskSegformerB5(path)
+        sky.export("sky_mask")
+        (~sky).export("not_sky_mask")
 
 if __name__ == "__main__":
     main()
