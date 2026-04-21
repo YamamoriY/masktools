@@ -33,5 +33,5 @@ class MyMask(GeneratedMask):
 
 ```python
 combined = (WhiteMask(path) - ExampleLeftMask(path)) * ExampleBottomMask(path)
-combined.save("right_bottom_quarter")  # output/right_bottom_quarter/{ファイル名} に保存
+combined.export("right_bottom_quarter")  # output/right_bottom_quarter/{ファイル名} に保存
 ```

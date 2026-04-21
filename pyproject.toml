@@ -5,7 +5,10 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
+    "einops>=0.8.2",
+    "kornia>=0.8.2",
     "pillow>=12.2.0",
+    "timm>=1.0.26",
     "torch",
     "torchvision",
     "transformers>=5.5.4",

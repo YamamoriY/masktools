@@ -3,6 +3,7 @@ from lib.example_right_mask import ExampleRightMask
 from lib.example_bottom_mask import ExampleBottomMask
 from lib.person_mask import PersonMask
 from lib.sky_mask_segformer_b5 import SkyMaskSegformerB5
+from lib.background_mask_rmbg2 import BackgroundMaskRmbg2
 
 def example():
     path = "data/testdata/input_01.jpg"
@@ -20,9 +21,9 @@ def main():
         "data/testdata/input_05.jpg",
     ]
     for path in paths:
-        sky = SkyMaskSegformerB5(path)
-        sky.export("sky_mask")
-        (sky).export("sky_mask")
+        background = BackgroundMaskRmbg2(path)
+        background.export("background_mask")
+        (~background).export("foreground_mask")
 
 if __name__ == "__main__":
     main()
