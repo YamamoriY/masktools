@@ -7,6 +7,7 @@ requires-python = ">=3.13"
 dependencies = [
     "torch",
     "torchvision",
+    "ultralytics>=8.4.40",
 ]
 
 [tool.uv.sources]
