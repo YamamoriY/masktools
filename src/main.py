@@ -9,7 +9,7 @@ def main():
     left_mask = LeftHalfMask(path)
     bottom_mask = BottomHalfMask(path)
     (~left_mask - bottom_mask).save("left_bottom_mask")
-    left_mask.save("left_mask")
+    left_mask.export("left_mask")
     exit()
     paths = [
         "data/testdata/input_01.jpg",
