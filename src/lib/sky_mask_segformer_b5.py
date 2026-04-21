@@ -11,6 +11,7 @@ from .mask import GeneratedMask
 _MODEL_ID = "nvidia/segformer-b5-finetuned-ade-640-640"
 _CACHE_DIR = Path("models/segformer-b5-ade")
 _SKY_CLASS_ID = 2  # ADE20K (150 classes, reduced labels): 2 == "sky"
+_INFERENCE_SIZE = 2048  # 訓練時は 640。上げると細い枝の境界が保たれやすい
 
 
 class SkyMaskSegformerB5(GeneratedMask):
@@ -19,7 +20,7 @@ class SkyMaskSegformerB5(GeneratedMask):
     _device: str = "cuda" if torch.cuda.is_available() else "cpu"
 
     def __init__(self, input_path: str):
-        super().__init__("sky_mask_segformer_b5", input_path)
+        super().__init__(f"sky_mask_segformer_b5_{_INFERENCE_SIZE}", input_path)
 
     @classmethod
     def _get_model(cls) -> tuple[SegformerForSemanticSegmentation, SegformerImageProcessor]:
@@ -40,7 +41,11 @@ class SkyMaskSegformerB5(GeneratedMask):
 
         model, processor = self._get_model()
         pil = Image.open(str(self.input_path)).convert("RGB")
-        inputs = processor(images=pil, return_tensors="pt").to(self._device)
+        inputs = processor(
+            images=pil,
+            return_tensors="pt",
+            size={"height": _INFERENCE_SIZE, "width": _INFERENCE_SIZE},
+        ).to(self._device)
 
         with torch.no_grad():
             logits = model(**inputs).logits  # (1, 150, H/4, W/4)

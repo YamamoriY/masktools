@@ -23,7 +23,7 @@ def main():
     for path in paths:
         sky = SkyMaskSegformerB5(path)
         sky.export("sky_mask")
-        (~sky).export("not_sky_mask")
+        (sky).export("sky_mask")
 
 if __name__ == "__main__":
     main()
