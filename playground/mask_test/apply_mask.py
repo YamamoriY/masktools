@@ -9,6 +9,7 @@ MASKS = [
     ("mask_gemini.png", "masked_gemini.png"),
     ("mask_gpt.png", "masked_gpt.png"),
     ("mask_gpt5.png", "masked_gpt5.png"),
+    ("mask_gpt5.4.png", "masked_gpt5.4.png"),
 ]
 THRESHOLD = 128
 

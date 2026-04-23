@@ -18,6 +18,7 @@ _DEFAULT_MODEL = "gpt-4.1-mini"
 @dataclass
 class ChatResponse:
     text: str
+    model: str = ""
     images: list[bytes] = field(default_factory=list)
 
 
@@ -63,7 +64,11 @@ class ChatGPT:
             for out in response.output
             if out.type == "image_generation_call" and out.result
         ]
-        return ChatResponse(text=response.output_text, images=generated)
+        return ChatResponse(
+            text=response.output_text,
+            model=response.model,
+            images=generated,
+        )
 
     @staticmethod
     def _to_image_url(image: str | Path) -> str:
@@ -77,7 +82,7 @@ class ChatGPT:
         return f"data:{mime};base64,{b64}"
 
 def main() -> None:
-    client = ChatGPT(model="gpt-5")
+    client = ChatGPT(model="gpt-5.4")
     response = client.ask(
         text=(
             "空部分のマスクを白黒で生成してください。"
@@ -85,6 +90,7 @@ def main() -> None:
         images=["data/testdata/input_03.jpg"],
         generate_images=True,
     )
+    print(f"model: {response.model}")
     print(response.text)
 
     out_dir = Path("data/tmp")
