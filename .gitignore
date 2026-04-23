@@ -15,5 +15,6 @@ wheels/
 plans/
 
 *.jpg
+*.png
 models/
 data/

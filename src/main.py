@@ -1,6 +1,7 @@
 from lib.example_left_mask import ExampleLeftMask
 from lib.example_right_mask import ExampleRightMask
 from lib.example_bottom_mask import ExampleBottomMask
+from lib.gemini_mask import GeminiMask
 from lib.person_mask import PersonMask
 from lib.sky_mask_segformer_b5 import SkyMaskSegformerB5
 from lib.background_mask_rmbg2 import BackgroundMaskRmbg2
@@ -11,6 +12,15 @@ def example():
     left_mask = ExampleLeftMask(path)
     bottom_mask = ExampleBottomMask(path)
     (~left_mask - bottom_mask).export("right_top_mask")
+
+def gemini_example():
+    path = "data/testdata/input_01.jpg"
+    mask = GeminiMask(
+        path,
+        prompt="Create a mask that extracts everything except the sky.",
+        label="sky",
+    )
+    mask.export("gemini_sky_mask")
 
 def main():
     paths = [
@@ -26,4 +36,5 @@ def main():
         (~background).export("foreground_mask")
 
 if __name__ == "__main__":
-    main()
+    # main()
+    gemini_example()
