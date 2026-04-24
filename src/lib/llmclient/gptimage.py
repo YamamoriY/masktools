@@ -25,6 +25,11 @@ def generate(
     quality: str = "low",
     n: int = 1,
 ) -> list[bytes]:
+    preview = prompt if len(prompt) <= 80 else prompt[:77] + "..."
+    print(
+        f"[LLM] gptimage.generate model={_MODEL} size={size} quality={quality} "
+        f"n={n} prompt={preview!r}"
+    )
     result = _get_client().images.generate(
         model=_MODEL,
         prompt=prompt,
@@ -43,6 +48,11 @@ def edit(
     size: str = "1024x1024",
     quality: str = "low",
 ) -> list[bytes]:
+    preview = prompt if len(prompt) <= 80 else prompt[:77] + "..."
+    print(
+        f"[LLM] gptimage.edit model={_MODEL} image={image} mask={mask} "
+        f"size={size} quality={quality} prompt={preview!r}"
+    )
     with open(image, "rb") as image_file:
         kwargs: dict = {
             "model": _MODEL,

@@ -29,7 +29,7 @@ class Mask:
         save_path.parent.mkdir(parents=True, exist_ok=True)
         write_jpeg(self.mask, save_path)
 
-    def apply(self, name: str) -> None:
+    def apply(self, name: str, apply_inv: bool = False) -> None:
         if self.input_path is None:
             raise ValueError("input_path is not set; cannot derive save location")
         image = read_image(self.input_path)
@@ -37,10 +37,16 @@ class Mask:
         save_path = self.input_path.parent / "output" / name / "apply" / self.input_path.name
         save_path.parent.mkdir(parents=True, exist_ok=True)
         write_jpeg(applied, save_path)
+        if apply_inv:
+            inv_mask = 255 - self.mask
+            applied_inv = (image.to(torch.float32) * inv_mask.to(torch.float32) / 255).to(torch.uint8)
+            inv_save_path = self.input_path.parent / "output" / name / "apply_inv" / self.input_path.name
+            inv_save_path.parent.mkdir(parents=True, exist_ok=True)
+            write_jpeg(applied_inv, inv_save_path)
 
-    def export(self, name: str) -> None:
+    def export(self, name: str, apply_inv: bool = False) -> None:
         self.save(name)
-        self.apply(name)
+        self.apply(name, apply_inv)
 
 
 class GeneratedMask(Mask, ABC):

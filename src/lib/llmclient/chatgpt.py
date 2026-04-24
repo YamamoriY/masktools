@@ -75,6 +75,11 @@ class ChatGPT:
                 "size": image_size,
             }]
 
+        preview = text if len(text) <= 80 else text[:77] + "..."
+        print(
+            f"[LLM] ChatGPT.ask model={self._model} images={len(images or [])} "
+            f"generate_images={generate_images} text={preview!r}"
+        )
         response = self._get_client().responses.create(**kwargs)
         generated = [
             base64.b64decode(out.result)
