@@ -30,7 +30,7 @@ if __name__ == "__main__":
 | `PersonMask` | 人物 | YOLO11n-seg | 中程度の精度 |
 | `SkyMaskSegformerB5` | 空 | SegFormer-B5 (ADE20K) | エッジが甘い |
 | `BackgroundMaskRmbg2` | 背景 | RMBG-2.0 | 前景/背景分離。空抽出には不向き |
-| `GeminiMask` | プロンプト指定 | Gemini 2.5 Flash | `label` で対象指定 |
+| `GeminiMask` | プロンプト指定 | Gemini 2.5 Flash | （非推奨）あまり整備されていない |
 | `GptImageMask` | プロンプト指定 | gpt-image-2 | `quality` (low/medium/high) と `size` 指定可 |
 | `GptSkyMask` | 空 | gpt-image-2 (空プロンプト固定) | `GptImageMask` のラッパ。実用品質 |
 | `TrunkMaskYolov11` | 木の幹 | YOLO11n-seg (自家 FT) | `conf` 指定可 |
