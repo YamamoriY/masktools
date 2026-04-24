@@ -3,6 +3,21 @@
 - 抽出対象が白(255)、その他を黒(0) とする。
 - マスクは `torch.Tensor` で保持し、元画像パス (`input_path`) と紐付く。
 
+## 実装済みマスク
+
+| クラス | 抽出対象 | 手法 / モデル | 備考 |
+|--------|----------|---------------|------|
+| `ExampleLeftMask` | 左半分 | -  | 演算サンプル |
+| `ExampleBottomMask` | 下半分 | -  | 演算サンプル |
+| `PersonMask` | 人物 | YOLO11n-seg (COCO) | 精度良好 |
+| `SkyMaskSegformerB5` | 空 | SegFormer-B5 (ADE20K) | エッジが甘い |
+| `BackgroundMaskRmbg2` | 背景 | RMBG-2.0 | 前景/背景分離。空抽出には不向き |
+| `GeminiMask` | プロンプト指定 | Gemini 2.5 Flash (native segmentation) | `label` で対象指定 |
+| `GptImageMask` | プロンプト指定 | gpt-image-2 (Images Edit) | `quality` (low/medium/high) と `size` 指定可 |
+| `GptSkyMask` | 空 | gpt-image-2 (空用プロンプト固定) | `GptImageMask` のラッパ。実用品質 |
+| `TrunkMaskYolov11` | 木の幹 | YOLO11n-seg (自家 FT) | `conf` 指定可 |
+| 2026-04-25 | `TrunkMaskYolov11` | 木の幹 | YOLO11n-seg (自家 FT) | `conf` 指定可 |
+
 ## マスクの作り方
 組み込みの具象クラス(`GeneratedMask` を継承)を使うか、自分で継承クラスを作る。
 
