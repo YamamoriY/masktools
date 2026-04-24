@@ -1,7 +1,7 @@
 """gpt-image-2 疎通確認スクリプト。
 
-OpenAI Images API (`client.images.generate` / `client.images.edit`) を
-直接呼び出して gpt-image-2 の挙動を確認する。
+OpenAI Images API (`client.images.edit`) を直接呼び出して
+gpt-image-2 によるマスク(白黒)生成の挙動を確認する。
 """
 
 import base64
@@ -64,23 +64,12 @@ def main() -> None:
     out_dir = Path("data/tmp")
     out_dir.mkdir(parents=True, exist_ok=True)
 
-    print(f"[1/2] generate: model={_MODEL}, size=1024x1024, quality=low")
-    images = generate(
-        prompt="A simple illustration of a blue sky with scattered white clouds.",
-        size="1024x1024",
-        quality="low",
-    )
-    for i, png in enumerate(images):
-        path = out_dir / f"gptimage_gen_{i:02d}.png"
-        path.write_bytes(png)
-        print(f"  saved: {path} ({len(png)} bytes)")
-
-    print(f"[2/2] edit: data/testdata/input_03.jpg (no mask)")
+    print(f"edit: data/testdata/input_03.jpg (no mask)")
     images = edit(
         image="data/testdata/input_03.jpg",
         prompt="空部分のマスクを白黒で生成してください。",
         size="1024x1024",
-        quality="low",
+        quality="medium",
     )
     for i, png in enumerate(images):
         path = out_dir / f"gptimage_edit_{i:02d}.png"
