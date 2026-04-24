@@ -1,5 +1,4 @@
 from lib.example_left_mask import ExampleLeftMask
-from lib.example_right_mask import ExampleRightMask
 from lib.example_bottom_mask import ExampleBottomMask
 from lib.gemini_mask import GeminiMask
 from lib.gptimage_mask import GptImageMask
@@ -10,7 +9,6 @@ from lib.background_mask_rmbg2 import BackgroundMaskRmbg2
 
 def example():
     path = "data/testdata/input_01.jpg"
-    right_mask = ExampleRightMask(path)
     left_mask = ExampleLeftMask(path)
     bottom_mask = ExampleBottomMask(path)
     (~left_mask - bottom_mask).export("right_top_mask")
@@ -23,13 +21,18 @@ def main():
         "data/testdata/input_04.jpg",
         "data/testdata/input_05.jpg",
     ]
-    for path in paths:
-        mask = GptSkyMask(
-            path,
-            quality="low",
-            size="1024x1024",
-        )
-        mask.export(f"gptsky_mask_low_1024x1024", apply_inv=True)
+    # qualities = ["low", "medium", "high"]
+    qualities = ["low"]
+    for quality in qualities:
+        for path in paths:
+            mask = GptSkyMask(
+                path,
+                quality=quality,
+                size="1024x1024",
+            )
+            person_mask = PersonMask(path)
+            mask = mask | person_mask
+            mask.export(f"gptsky_person_mask_{quality}", apply_inv=True)
 
 if __name__ == "__main__":
     main()

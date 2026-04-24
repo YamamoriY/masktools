@@ -22,6 +22,7 @@ class Mask:
     def __invert__(self) -> "Mask":
         return Mask(255 - self.mask, self.input_path)
 
+    # マスクを保存
     def save(self, name: str) -> None:
         if self.input_path is None:
             raise ValueError("input_path is not set; cannot derive save location")
@@ -29,24 +30,42 @@ class Mask:
         save_path.parent.mkdir(parents=True, exist_ok=True)
         write_jpeg(self.mask, save_path)
 
-    def apply(self, name: str, apply_inv: bool = False) -> None:
+    # マスクを適用した画像を出力（確認用）
+    def apply(
+        self,
+        name: str,
+        apply_inv: bool = True,    # 反転させたマスクの画像も出力
+        bg_color: tuple[int, int, int] = (180, 0, 180),
+    ) -> None:
         if self.input_path is None:
             raise ValueError("input_path is not set; cannot derive save location")
-        image = read_image(self.input_path)
-        applied = (image.to(torch.float32) * self.mask.to(torch.float32) / 255).to(torch.uint8)
+        image = read_image(self.input_path).to(torch.float32)
+        alpha = self.mask.to(torch.float32) / 255
+        bg = torch.tensor(bg_color, dtype=torch.float32).view(3, 1, 1)
+        applied = (image * alpha + bg * (1 - alpha)).to(torch.uint8)
         save_path = self.input_path.parent / "output" / name / "apply" / self.input_path.name
         save_path.parent.mkdir(parents=True, exist_ok=True)
         write_jpeg(applied, save_path)
         if apply_inv:
-            inv_mask = 255 - self.mask
-            applied_inv = (image.to(torch.float32) * inv_mask.to(torch.float32) / 255).to(torch.uint8)
+            inv_alpha = 1 - alpha
+            applied_inv = (image * inv_alpha + bg * alpha).to(torch.uint8)
             inv_save_path = self.input_path.parent / "output" / name / "apply_inv" / self.input_path.name
             inv_save_path.parent.mkdir(parents=True, exist_ok=True)
             write_jpeg(applied_inv, inv_save_path)
 
-    def export(self, name: str, apply_inv: bool = False) -> None:
+    # マスクの保存と適用（確認用）
+    # 迷ったらこれ
+    def export(
+        self,
+        name: str,
+        apply_inv: bool = True,
+        bg_color: tuple[int, int, int] | None = None,
+    ) -> None:
         self.save(name)
-        self.apply(name, apply_inv)
+        if bg_color is None:
+            self.apply(name, apply_inv)
+        else:
+            self.apply(name, apply_inv, bg_color)
 
 
 class GeneratedMask(Mask, ABC):
