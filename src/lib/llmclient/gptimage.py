@@ -1,0 +1,92 @@
+"""gpt-image-2 疎通確認スクリプト。
+
+OpenAI Images API (`client.images.generate` / `client.images.edit`) を
+直接呼び出して gpt-image-2 の挙動を確認する。
+"""
+
+import base64
+from pathlib import Path
+
+from dotenv import load_dotenv
+from openai import OpenAI
+
+_MODEL = "gpt-image-2"
+
+
+def _get_client() -> OpenAI:
+    load_dotenv()
+    return OpenAI()
+
+
+def generate(
+    prompt: str,
+    *,
+    size: str = "1024x1024",
+    quality: str = "low",
+    n: int = 1,
+) -> list[bytes]:
+    result = _get_client().images.generate(
+        model=_MODEL,
+        prompt=prompt,
+        size=size,
+        quality=quality,
+        n=n,
+    )
+    return [base64.b64decode(d.b64_json) for d in result.data]
+
+
+def edit(
+    image: str | Path,
+    prompt: str,
+    *,
+    mask: str | Path | None = None,
+    size: str = "1024x1024",
+    quality: str = "low",
+) -> list[bytes]:
+    with open(image, "rb") as image_file:
+        kwargs: dict = {
+            "model": _MODEL,
+            "image": image_file,
+            "prompt": prompt,
+            "size": size,
+            "quality": quality,
+        }
+        if mask is not None:
+            with open(mask, "rb") as mask_file:
+                kwargs["mask"] = mask_file
+                result = _get_client().images.edit(**kwargs)
+        else:
+            result = _get_client().images.edit(**kwargs)
+    return [base64.b64decode(d.b64_json) for d in result.data]
+
+
+def main() -> None:
+    out_dir = Path("data/tmp")
+    out_dir.mkdir(parents=True, exist_ok=True)
+
+    print(f"[1/2] generate: model={_MODEL}, size=1024x1024, quality=low")
+    images = generate(
+        prompt="A simple illustration of a blue sky with scattered white clouds.",
+        size="1024x1024",
+        quality="low",
+    )
+    for i, png in enumerate(images):
+        path = out_dir / f"gptimage_gen_{i:02d}.png"
+        path.write_bytes(png)
+        print(f"  saved: {path} ({len(png)} bytes)")
+
+    print(f"[2/2] edit: data/testdata/input_03.jpg (no mask)")
+    images = edit(
+        image="data/testdata/input_03.jpg",
+        prompt="空部分のマスクを白黒で生成してください。",
+        size="1024x1024",
+        quality="low",
+    )
+    for i, png in enumerate(images):
+        path = out_dir / f"gptimage_edit_{i:02d}.png"
+        path.write_bytes(png)
+        print(f"  saved: {path} ({len(png)} bytes)")
+
+
+if __name__ == "__main__":
+    main()

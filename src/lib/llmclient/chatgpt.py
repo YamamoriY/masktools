@@ -9,6 +9,8 @@ import mimetypes
 from dataclasses import dataclass, field
 from pathlib import Path
 
+from typing import Any
+
 from dotenv import load_dotenv
 from openai import OpenAI
 
@@ -20,6 +22,15 @@ class ChatResponse:
     text: str
     model: str = ""
     images: list[bytes] = field(default_factory=list)
+    raw: Any = None
+
+    def dump(self) -> str:
+        """生レスポンスを JSON 文字列として返す（画像 bytes を除く全フィールド）。"""
+        if self.raw is None:
+            return ""
+        if hasattr(self.raw, "model_dump_json"):
+            return self.raw.model_dump_json(indent=2, exclude_none=False)
+        return str(self.raw)
 
 
 class ChatGPT:
@@ -41,6 +52,8 @@ class ChatGPT:
         text: str,
         images: list[str | Path] | None = None,
         generate_images: bool = False,
+        image_quality: str = "high",
+        image_size: str = "auto",
     ) -> ChatResponse:
         content: list[dict] = [{"type": "input_text", "text": text}]
         for image in images or []:
@@ -56,7 +69,11 @@ class ChatGPT:
         if self._instructions is not None:
             kwargs["instructions"] = self._instructions
         if generate_images:
-            kwargs["tools"] = [{"type": "image_generation"}]
+            kwargs["tools"] = [{
+                "type": "image_generation",
+                "quality": image_quality,
+                "size": image_size,
+            }]
 
         response = self._get_client().responses.create(**kwargs)
         generated = [
@@ -68,6 +85,7 @@ class ChatGPT:
             text=response.output_text,
             model=response.model,
             images=generated,
+            raw=response,
         )
 
     @staticmethod
@@ -92,6 +110,9 @@ def main() -> None:
     )
     print(f"model: {response.model}")
     print(response.text)
+    print("--- raw response ---")
+    print(response.dump())
+    print("--------------------")
 
     out_dir = Path("data/tmp")
     out_dir.mkdir(parents=True, exist_ok=True)
